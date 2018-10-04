@@ -1,0 +1,21 @@
+-------------------------------------------------------------
+Log for testRepository
+-------------------------------------------------------------
+#1  Thu 4 Oct 18:26:05 BST 2018  charlie
+Created repository and added two empty test files
+-------------------------------------------------------------
+test1.txt
+  changes
+
+test2.txt
+  changes
+-------------------------------------------------------------
+#2  Thu 6 Oct 10:12:45 BST 2018   charlie
+Removed test2.txt
+-------------------------------------------------------------
+test1.txt
+  no changes //maybe just leave this out?
+
+fileName2
+  //removed/however you need it to work
+-------------------------------------------------------------
