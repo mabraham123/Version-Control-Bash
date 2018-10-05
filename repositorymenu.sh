@@ -45,7 +45,26 @@ do
 			fi
 	elif [ "$choice" = "2" ]
 		then
-			ls -1
+			#Display the repositories
+			echo "Repositories: "
+			ls -1d */
+
+			#Ask the user for what repository they want to open
+			echo ""
+			echo "Type the name of the repository you want to open"
+			read repName
+
+			if [ -d $repName ]
+			then
+				cd $repName
+				RepositoryMenu "$repName"
+				runMenu=1
+			else
+				#Display error message that the repo exits already
+				echo ""
+				echo -e "ERROR:  The repository: $repName does not exists\n\tTry Again with a current repository or make a new one with the name: $repName"
+				echo ""
+			fi
 			#statements
 	elif [ "$choice" = "3" ]
 		then
@@ -86,6 +105,7 @@ do
 	if [ "$choice" = "1" ]
 		then
 			echo "Select File Option"
+			ls
 	elif [ "$choice" = "2" ]
 		then
 			echo "Pull Option"
@@ -93,10 +113,10 @@ do
 		then
 			echo "Push Option"
 			#statements
-	elif [ "$choice" = "4"]
+	elif [ "$choice" = "4" ]
 		then
-			runMenu=1 #false
 			echo "The program will now exit"
+			exit 0
 	else
 		#The user entered something that was not a valid entry
 		echo ""
