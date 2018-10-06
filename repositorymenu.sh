@@ -34,12 +34,18 @@ do
 				echo -e "ERROR:  The repository: $repName already exists\n\tChoose a new name or open that repository"
 				echo ""
 			else
-				#Make the repo
-				mkdir $repName
-					echo "SUCCESS: $repName has been created"
-					echo ""
-				#Display menu for the repo
-				RepositoryMenu "$repName"
+				makeRepository "$repName"
+
+				# #Make the repo
+				# mkdir $repName
+				# 	echo "SUCCESS: $repName has been created"
+				# 	echo ""
+				# #Display menu for the repo
+				# cd $repName
+				# RepositoryMenu "$repName"
+				# mkdir "Master"
+				# mkdir "Working"
+				# mkdir "Changes"
 				#End loop
 				runMenu=1
 			fi
@@ -127,6 +133,22 @@ do
 done
 }
 
+
+makeRepository(){
+	#Make the repo
+	mkdir $1
+		echo "SUCCESS: $1 has been created"
+		echo ""
+	#Move into the new repository
+	cd $1
+	
+	#Create the sub folders
+	mkdir Master
+	mkdir Working
+	mkdir Changes
+	#Display the menu for the repository
+	RepositoryMenu "$1"		
+}
 
 
 #Main Method
