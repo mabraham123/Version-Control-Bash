@@ -99,11 +99,17 @@ do
 	echo -e "--------------------------------------------------------\n"
 	echo -e "Repository Menu- $1\n"
 	echo -e "--------------------------------------------------------\n"
+	#Display the contents of the repo to the user
+	echo "Repository Content:"
+	ls
+	echo -e "--------------------------------------------------------\n"
 	echo -e "1. Select File\n"
 	echo -e "2. Pull\n"
 	echo -e "3. Push\n"
 	echo -e "4. Exit\n"
 	echo -e "--------------------------------------------------------\n"
+
+
 
 	#Get the users option
 	read choice
@@ -115,6 +121,7 @@ do
 	elif [ "$choice" = "2" ]
 		then
 			echo "Pull Option"
+			pull
 	elif [ "$choice" = "3" ]
 		then
 			echo "Push Option"
@@ -149,6 +156,62 @@ makeRepository(){
 	#Display the menu for the repository
 	RepositoryMenu "$1"		
 }
+
+updateFile(){
+	#true: find the difference and apply them
+	diff $1 ../Master/$1 > $1.patch
+	patch $1 $1.patch
+	rm $1.patch
+	#echo "$1 is now up to date"
+}
+
+
+pull(){
+	#Show all the files that can be checked out
+	cd Master
+	echo ""
+	echo "What file do you want to check out: "
+	ls
+	
+	#Select file
+	echo ""
+	echo "filename: "
+	read filename
+	#Check if the file exists
+	if [ -f $filename ]
+		then
+				#Check if file is in working dir
+				cd ../Working
+				if [ -f $filename ]
+				then
+					#true: find the difference and apply them
+					# diff $filename ../Master/$filename > $filename.patch
+					# patch $filename $filename.patch
+					# rm $filename.patch
+					
+
+
+					updateFile "$filename"
+					echo "$filename is now up to date"
+				else
+					#false: copy the files over
+					cd ../Master
+					cp $filename ../Working
+					echo "File is now availbe to work on"
+
+					
+				fi
+		else
+				#Display error message that the repo exits already
+				echo ""
+				echo -e "ERROR:  The repository: $fileame does not exists\n\tTry Again with an existing file"
+				echo ""
+				cd ../
+	fi
+	
+	#Send success message
+}
+
 
 
 #Main Method
