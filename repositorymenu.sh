@@ -95,7 +95,9 @@ do
 	echo -e "1. Select File\n"
 	echo -e "2. Pull\n"
 	echo -e "3. Push\n"
-	echo -e "4. Exit\n"
+	echo -e "4. Archive\n"
+	echo -e "5. Compile\n"
+	echo -e "6. Exit\n"
 	echo -e "--------------------------------------------------------\n"
 
 
@@ -133,6 +135,15 @@ do
 			#statements
 	elif [ "$choice" = "4" ]
 		then
+		#Archive
+		echo "Archive method"
+	elif [ "$choice" = "5" ] 
+		then
+		#Compile
+		echo "Compile method"
+	elif [ "$choice" = "6" ] 
+		then
+		#Exit
 			echo "The program will now exit"
 			exit 0
 	else
@@ -265,6 +276,7 @@ selectFileQuestion()
 {
 	cd Working
 	ls
+	echo ""
 	echo -e "Please enter the file name of the file you wish to selcet - Please Note this will not show if you have not pulled the repository"
 	read fileName
 	if [ -f $fileName ]
