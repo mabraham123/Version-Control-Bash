@@ -136,7 +136,16 @@ do
 	elif [ "$choice" = "4" ]
 		then
 		#Archive
-		echo "Archive method"
+		#Move back a directory
+		cd ../
+		#zip the repository
+		zip -r "$1".zip $1
+		#Success button
+		echo ""
+		echo "Archive Complete"
+		
+		#Move back into the repository
+		cd $1
 	elif [ "$choice" = "5" ] 
 		then
 		#Compile
