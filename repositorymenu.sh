@@ -34,19 +34,8 @@ do
 				echo -e "ERROR:  The repository: $repName already exists\n\tChoose a new name or open that repository"
 				echo ""
 			else
+				# make new repository in current folder
 				makeRepository "$repName"
-
-				# #Make the repo
-				# mkdir $repName
-				# 	echo "SUCCESS: $repName has been created"
-				# 	echo ""
-				# #Display menu for the repo
-				# cd $repName
-				# RepositoryMenu "$repName"
-				# mkdir "Master"
-				# mkdir "Working"
-				# mkdir "Changes"
-				#End loop
 				runMenu=1
 			fi
 	elif [ "$choice" = "2" ]
@@ -220,10 +209,13 @@ push()
 	cd Working
 	diff  ../Master/$1 $1 > $1.patch
 	patch ../Master/$1 $1.patch
-	# rm $1.patch
 	DATE=`date '+%Y-%m-%d %H:%M:%S'`
-	charliesFunction description $1 date 
-	 
+
+	# run the create a log for current push script (args = [filename date description patch_file])
+	./log.sh $1 date description $1.patch
+
+	# remove the patch file as it is no longer needed and stored in $1.log anyway
+	# rm $1.patch
 }
 
 
