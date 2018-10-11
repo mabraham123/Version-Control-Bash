@@ -218,6 +218,22 @@ push()
 	# rm $1.patch
 }
 
+selectFileQuestion()
+{
+	cd Master
+	ls
+	echo -e "Please enter the file name of the file you wish to selcet"
+	read fileName
+	if [ -f $fileName ]
+	then 
+		echo $fileName
+	else 
+		echo "The file was not found in the current working directory"
+		selectFileQuestion
+	fi
+	# result = ($selectFileQuestion) 
+	# use above to use parameter
+}
 
 
 #Main Method
