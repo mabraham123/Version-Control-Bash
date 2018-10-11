@@ -212,6 +212,20 @@ pull(){
 	#Send success message
 }
 
+push()
+{
+	echo -e "Please enter a short description of what you have changed (Please do this on one line only)"
+	read description
+
+	cd Working
+	diff  ../Master/$1 $1 > $1.patch
+	patch ../Master/$1 $1.patch
+	# rm $1.patch
+	DATE=`date '+%Y-%m-%d %H:%M:%S'`
+	charliesFunction description $1 date 
+	 
+}
+
 
 
 #Main Method
