@@ -112,16 +112,20 @@ do
 		then
 			echo "Pull Option"
 			pull
+			echo ""
+			echo "Pull has been successful"
 	elif [ "$choice" = "3" ]
 		then
 			echo "Push Option"
 				cd Working
 				ls
 				echo -e "Please enter the file name of the file you wish to selcet"
-				read fileName
-				if [ -f $fileName ]
+				read filename
+				cd ..
+				if [ -f Working/$filename ]
 				then 
 					push "$filename"
+					cd $1
 				else 
 					echo "ERROR:	$filename does not exist, try a different file or create a new file called $filename"
 				fi
@@ -210,24 +214,32 @@ pull(){
 				cd ../
 	fi
 	
+	cd ../
 	#Send success message
+	echo ""
+	echo "Pull has been successful"
 }
+
+
+
 
 push()
 {
 	echo -e "Please enter a short description of what you have changed (Please do this on one line only)"
 	read description
 
-	diff ../Master/"$1" "$1" > "$1.patch"
-	patch ../Master/"$1" "$1.patch"
+	
+	diff Master/"$1" Working/"$1" > "$1".patch
+	patch Master/"$1" "$1".patch
 	DATE=`date '+%Y-%m-%d %H:%M:%S'`
 
 	# run the create a log for current push script (args = [filename date description patch_file])
-	cd ../Changes
+	cd Changes
 	writeToLog "$1" "$DATE" "$description"
+	rm $1.patch
 
-	# remove the patch file as it is no longer needed and stored in $1.log anyway
-	# rm $1.patch
+			echo ""
+			echo "Push has been successful"
 }
 
 
@@ -235,11 +247,18 @@ push()
 
 writeToLog()
 {
-	echo -e "================================================================================================" >> $1$2.log
-	echo -e "File: $1" >> "$1$2.log"
-	echo -e "Date/Time: $2" >> "$1$2.log"
-	echo -e "Description: $3" >> "$1$2.log"
-	cat "$1.patch" >> "$1$2.log"
+	# echo -e "================================================================================================" >> "$1$2.log"
+	# echo -e "File: $1" >> "$1$2.log"
+	# echo -e "Date/Time: $2" >> "$1$2.log"
+	# echo -e "Description: $3" >> "$1$2.log"
+	# cat "$1.patch" >> "$1$2.log"
+
+	echo -e "================================================================================================" >> "$1$2".log
+	echo -e "File: $1" >> "$1$2".log
+	echo -e "Date/Time: $2" >> "$1$2".log
+	echo -e "Description: $3" >> "$1$2".log
+	cd ../
+	cat "$1".patch >> Changes/"$1$2".log
 }
 
 selectFileQuestion()
@@ -335,6 +354,8 @@ do
 	done
 			
 }
+
+
 
 #Main Method
 ProcessMainMenu
