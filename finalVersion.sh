@@ -266,7 +266,7 @@ push()
 	cd ..
 	diff Master/"$1" Working/"$1" > "$1".patch
 	patch Master/"$1" "$1".patch
-	DATE=`date '+%Y-%m-%d %H:%M:%S'`
+	DATE=`date '+%Y-%m-%d-%H:%M:%S'`
 
 	# run the create a log for current push script (args = [filename date description patch_file])
 	cd Changes
@@ -289,7 +289,7 @@ writeToLog()
 	# cat "$1.patch" >> "$1$2.log"
 
 	echo -e "================================================================================================" >> "$1$2".log
-	echo -e "File: $1" >> "$1$2".log
+	echo -e "$1" >> "$1$2".log
 	echo -e "Date/Time: $2" >> "$1$2".log
 	echo -e "Description: $3" >> "$1$2".log
 	cd ../
@@ -332,7 +332,8 @@ do
 	echo -e "--------------------------------------------------------\n"
 	echo -e "1. Open file in Nano text editor\n"
 	echo -e "2. Remove file\n"
-	echo -e "3. Exit"
+	echo -e "3. Revert previous patch - Please revert in chronological order\n"
+	echo -e "4. Exit"
 	echo -e "--------------------------------------------------------\n"
 
 	#Get the users option
@@ -360,7 +361,7 @@ do
 
 		elif [ "$choice" = "2" ] 
 		then
-				echo -e "Are you sure tou want to delete this file it will be deleted perminently? y/n"
+				echo -e "Are you sure you want to delete this file it will be deleted permanently? y/n"
 				read input
 				if [ $input = 'y' -o $input = 'n' ]
 				then 
@@ -373,14 +374,18 @@ do
 				rm $fileName
 				cd ..
 				cd Changes	
-				rm *$fileName
+				rm *$fileName  ############################################################################
+				cd ..
 				else
 				echo " "
-				fi 
+				fi
 			fi
+
+		elif [ "$choice" = "3" ] 
+		then
+			revert
 				
-			
-		elif [ "$choice" = "3" ]
+		elif [ "$choice" = "4" ]
 		then
 			echo "The program will now exit"
 			exit 0
@@ -409,7 +414,78 @@ addFile()
 	cd ..
 }
 
+reversePatch()
+{
+	# set file to be path to log file
+	file=$1
+
+	# set lineCounter to 0
+	lineCounter=0
+
+	# create the empty .patch file
+	cd Master
+	touch "$1".patch
+	cd ..
+
+	# read log file line by line
+	while read -r line
+	do
+		# store fileName 
+		if [ "$lineCounter" = "1" ]
+		then
+			fileName="$line"
+		fi
+
+		# if on patch bit of log file, read to patch file
+		if [ "$lineCounter" -gt "3" ]
+		then
+			echo "$line" >> Master/"$fileName".patch
+		fi
+
+		# increment lineCounter
+		((lineCounter++))
+
+	# reading from log file
+	done < "Changes/$file"
+
+	# reverse patch
+	patch -R "Master/$fileName" "Master/$fileName.patch"
+
+	# remove patch and log files
+	rm -f Master/"$fileName".patch
+	rm -f Changes/$file
+
+	echo "patch reversed"
+}
+
+selectRevQuestion()
+{
+	pwd
+	cd ../Changes
+	ls
+	echo -e "Please enter the file name of the file you wish to selcet - Please Note this will not show if you have not pulled the repository"
+	read fileName
+	if [ -f $fileName ]
+	then 
+		echo " "
+		cd ..
+		reversePatch $fileName
+	else 
+		echo "The file was not found in the current working directory"
+		selectRevQuestion
+	fi
+	# result = ($selectFileQuestion) 
+	# use above to use parameter
+}
+
+revert()
+{
+	selectRevQuestion
+}
+
 
 
 #Main Method
 ProcessMainMenu
+
+#revert
