@@ -107,6 +107,7 @@ do
 		then
 			echo "Select File Option"
 			ls
+			selectFileQuestion
 	elif [ "$choice" = "2" ]
 		then
 			echo "Pull Option"
@@ -239,6 +240,100 @@ writeToLog()
 	echo -e "Date/Time: $2" >> "$1$2.log"
 	echo -e "Description: $3" >> "$1$2.log"
 	cat "$1.patch" >> "$1$2.log"
+}
+
+selectFileQuestion()
+{
+	cd Working
+	ls
+	echo -e "Please enter the file name of the file you wish to selcet - Please Note this will not show if you have not pulled the repository"
+	read fileName
+	if [ -f $fileName ]
+	then 
+		echo " "
+		selectFile
+	else 
+		echo "The file was not found in the current working directory"
+		selectFileQuestion
+	fi
+	# result = ($selectFileQuestion) 
+	# use above to use parameter
+}
+
+selectFile()
+{
+	runMenu=0
+
+while [ "$runMenu" = "0" ] #true
+do
+
+	#Display the Repo Menu
+	# echo -e "--------------------------------------------------------\n"
+	# echo -e "Repository Menu- $1\n"
+	# echo -e "--------------------------------------------------------\n"
+	#Display the contents of the repo to the user
+	echo "Please select an option from the list below \n"
+	ls
+	echo -e "--------------------------------------------------------\n"
+	echo -e "1. Open file in Nano text editor\n"
+	echo -e "2. Remove file\n"
+	echo -e "3. Exit"
+	echo -e "--------------------------------------------------------\n"
+
+	#Get the users option
+	read choice
+	#Process the Users Option
+	if [ "$choice" = "1" ]
+		then
+			cd Working
+			echo "Opening the file in nano"
+			nano $fileName 
+			cd ..
+			echo -e "Would you like to push the changes? y/n"
+			read input
+			if [ $input = 'y' -o $input = 'n' ]
+			then 
+				if [ $input = 'y' ]
+				then 
+				push $fileName
+				else
+				echo " "
+				fi 
+			else
+				echo "Invalid input please only enter y or n file has not been pushed"
+			fi
+
+		elif [ "$choice" = "2" ] 
+		then
+				echo -e "Are you sure tou want to delete this file it will be deleted perminently? y/n"
+				read input
+				if [ $input = 'y' -o $input = 'n' ]
+				then 
+				if [ $input = 'y' ]
+				then 
+				cd Working
+				rm $fileName
+				cd ..
+				cd Master
+				rm $fileName
+				cd ..
+				cd Changes	
+				rm *$fileName
+				else
+				echo " "
+				fi 
+			fi
+				
+			
+		elif [ "$choice" = "3" ]
+		then
+			echo "The program will now exit"
+			exit 0
+		else
+			echo " "
+		fi
+	done
+			
 }
 
 #Main Method
