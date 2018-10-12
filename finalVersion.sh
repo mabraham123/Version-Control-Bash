@@ -12,7 +12,7 @@ displayMenu()
 }
 
 ProcessMainMenu(){
-#initalise Menu
+#initialise Menu
 runMenu=0
 
 while [ "$runMenu" = "0" ] #true
@@ -121,17 +121,7 @@ echo -e "--------------------------------------------------------\n"
 		then
 			echo "Select File Option"
 			ls
-
-			
-		if [ ! "$(ls -A ./Master)" ]
-		then
-    		echo "Error there are no files in this directory"
-    		sleep 2
-		else
-			 echo " somehing "
-    	 	selectFileQuestion
-    		
-		fi 
+			selectFileQuestion
 	elif [ "$choice" = "2" ]
 		then
 			echo "Pull Option"
@@ -289,6 +279,8 @@ push()
 
 			echo ""
 			echo "Push has been successful"
+
+	cd ..
 }
 
 
@@ -315,7 +307,7 @@ selectFileQuestion()
 	pwd
 	cd Working
 	ls
-	echo -e "Please enter the file name of the file you wish to selcet - Please Note this will not show if you have not pulled the repository"
+	echo -e "Please enter the file name of the file you wish to select - Please Note this does not update your Repository so please Pull before using this."
 	read fileName
 	if [ -f $fileName ]
 	then 
