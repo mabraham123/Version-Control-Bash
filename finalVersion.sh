@@ -103,17 +103,6 @@ echo -e "--------------------------------------------------------\n"
 	echo -e "8. Exit\n"
 echo -e "--------------------------------------------------------\n"
 
-	# echo -e "1. Select File\n"
-	# echo -e "2. Pull\n"
-	# echo -e "3. Push\n"
-	# echo -e "4. Compile C Programs in the Repository\n"
-	# echo -e "5. Add new file"
-	# echo -e "6. Add new file"
-	# echo -e "7. Exit\n"
-	# echo -e "--------------------------------------------------------\n"
-
-
-
 	#Get the users option
 	read choice
 	#Process the Users Option
@@ -121,7 +110,17 @@ echo -e "--------------------------------------------------------\n"
 		then
 			echo "Select File Option"
 			ls
-			selectFileQuestion
+
+			
+		if [ ! "$(ls -A ./Master)" ]
+		then
+    		echo "Error there are no files in this directory"
+    		sleep 2
+		else
+			 echo " somehing "
+    	 	selectFileQuestion
+    		
+		fi 
 	elif [ "$choice" = "2" ]
 		then
 			echo "Pull Option"
@@ -279,7 +278,6 @@ push()
 
 			echo ""
 			echo "Push has been successful"
-
 	cd ..
 }
 
@@ -288,12 +286,7 @@ push()
 
 writeToLog()
 {
-	# echo -e "================================================================================================" >> "$1$2.log"
-	# echo -e "File: $1" >> "$1$2.log"
-	# echo -e "Date/Time: $2" >> "$1$2.log"
-	# echo -e "Description: $3" >> "$1$2.log"
-	# cat "$1.patch" >> "$1$2.log"
-
+	# write data to log file in a structured way: First 4 lines contain information on the file, anything after that is the patch file for that
 	echo -e "================================================================================================" >> "$1$2".log
 	echo -e "$1" >> "$1$2".log
 	echo -e "Date/Time: $2" >> "$1$2".log
@@ -307,8 +300,10 @@ selectFileQuestion()
 	pwd
 	cd Working
 	ls
-	echo -e "Please enter the file name of the file you wish to select - Please Note this does not update your Repository so please Pull before using this."
+	#propts user to enter file name
+	echo -e "Please enter the file name of the file you wish to select - Please Note this does not update your repository, so please pull before using this"
 	read fileName
+	# checks the file exists
 	if [ -f $fileName ]
 	then 
 		echo " "
@@ -317,8 +312,6 @@ selectFileQuestion()
 		echo "The file was not found in the current working directory"
 		selectFileQuestion
 	fi
-	# result = ($selectFileQuestion) 
-	# use above to use parameter
 }
 
 selectFile()
@@ -367,18 +360,22 @@ do
 
 		elif [ "$choice" = "2" ] 
 		then
+				#prompts user to ensure they want to delete
 				echo -e "Are you sure you want to delete this file it will be deleted permanently? y/n"
 				read input
+				#checks for valid files
 				if [ $input = 'y' -o $input = 'n' ]
 				then 
+				#checks for y
 				if [ $input = 'y' ]
 				then 
-				cd Working
-				rm $fileName
-				cd ..
-				cd Master
-				rm $fileName
-				cd ..
+					#deletes from working and master
+					cd Working
+					rm $fileName
+					cd ..
+					cd Master
+					rm $fileName
+					cd ..
 				else
 				echo " "
 				fi
@@ -401,9 +398,11 @@ do
 
 compileC()
 {
+	#change to working 
 	cd Working
-
+	#finds all c files in the directory
 	temp=`ls *.c`
+	#compiles all .c files found
 	gcc $temp
 	cd ..
 	echo "All c programs have been compiled"
@@ -412,6 +411,7 @@ compileC()
 addFile()
 {
 	cd Working
+	#opens nano and sets default file name to working 
 	nano new
 	echo "The file has been saved to working however it has not been pushed"
 	cd ..
@@ -464,21 +464,25 @@ reversePatch()
 selectRevQuestion()
 {
 	pwd
+	# moves to changes
 	cd ../Changes
 	ls
 	echo -e "Please enter the file name of the file you wish to selcet - Please Note this will not show if you have not pulled the repository"
+	# reads the user input
 	read file
+	# checks the file exists in the directory
 	if [ -f $file ]
 	then 
 		echo " "
 		cd ..
+		#calls reverse patch 
 		reversePatch $file
 	else 
+		#reprompts user
 		echo "The file was not found in the current working directory"
 		selectRevQuestion
 	fi
-	# result = ($selectFileQuestion) 
-	# use above to use parameter
+	
 }
 
 revert()
@@ -488,17 +492,22 @@ revert()
 
 deleteRepository()
 {
+	# ask user if they are really sure they want to delete the repository and read their input (y/n)
 	echo "Are you sure that you want to delete the current repository? This will permanently delete the repository and all its files (y/n)"
 	read input
+
+	# if y delete the repository and exit the program
 	if [ $input = "y" ]
 	then
 		rm -rf `pwd`
 		echo "$path has been deleted Please restart the program"
 		exit 0
+	# if n return to menu
 	elif [ $input = "n" ]
 	then
 		echo "Returning to repository menu"
 		sleep 2
+	# else error message + return to menu 
 	else
 		echo "Invalid option please enter y/n. Returning to Menu"
 		sleep 2
