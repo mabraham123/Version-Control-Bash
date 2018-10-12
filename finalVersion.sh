@@ -99,7 +99,8 @@ echo -e "--------------------------------------------------------\n"
 	echo -e "4. Archive\n"
 	echo -e "5. Compile\n"
 	echo -e "6. Add New File\n"
-	echo -e "7. Exit\n"
+	echo -e "7. Delete Repository\n"
+	echo -e "8. Exit\n"
 echo -e "--------------------------------------------------------\n"
 
 	# echo -e "1. Select File\n"
@@ -164,9 +165,12 @@ echo -e "--------------------------------------------------------\n"
 
 	elif [ "$choice" = "7" ]
 		then
+			deleteRepository
+
+	elif [ "$choice" = "8" ]
+		then
 			echo "The program will now exit"
 			exit 0
-
 	else
 		#The user entered something that was not a valid entry
 		echo ""
@@ -428,7 +432,7 @@ reversePatch()
 	cd ..
 
 	# read log file line by line
-	while read -r line
+	while IFS= read -r line
 	do
 		# store fileName 
 		if [ "$lineCounter" = "1" ]
@@ -439,7 +443,7 @@ reversePatch()
 		# if on patch bit of log file, read to patch file
 		if [ "$lineCounter" -gt "3" ]
 		then
-			echo "$line" >> Master/"$fileName".patch
+			echo "$line" >> Master/"$file".patch
 		fi
 
 		# increment lineCounter
@@ -449,10 +453,10 @@ reversePatch()
 	done < "Changes/$file"
 
 	# reverse patch
-	patch -R "Master/$fileName" "Master/$fileName.patch"
+	patch -R "Master/$fileName" "Master/$file.patch"
 
 	# remove patch and log files
-	rm -f Master/"$fileName".patch
+	rm -f Master/"$file".patch
 	rm -f Changes/$file
 
 	echo "patch reversed"
@@ -464,12 +468,12 @@ selectRevQuestion()
 	cd ../Changes
 	ls
 	echo -e "Please enter the file name of the file you wish to selcet - Please Note this will not show if you have not pulled the repository"
-	read fileName
-	if [ -f $fileName ]
+	read file
+	if [ -f $file ]
 	then 
 		echo " "
 		cd ..
-		reversePatch $fileName
+		reversePatch $file
 	else 
 		echo "The file was not found in the current working directory"
 		selectRevQuestion
@@ -483,9 +487,25 @@ revert()
 	selectRevQuestion
 }
 
+deleteRepository()
+{
+	echo "Are you sure that you want to delete the current repository? This will permanently delete the repository and all its files (y/n)"
+	read input
+	if [ $input = "y" ]
+	then
+		rm -rf `pwd`
+		echo "$path has been deleted Please restart the program"
+		exit 0
+	elif [ $input = "n" ]
+	then
+		echo "Returning to repository menu"
+		sleep 2
+	else
+		echo "Invalid option please enter y/n. Returning to Menu"
+		sleep 2
+	fi
+}
 
 
 #Main Method
 ProcessMainMenu
-
-#revert
