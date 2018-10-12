@@ -15,7 +15,7 @@ ProcessMainMenu(){
 #initialise Menu
 runMenu=0
 
-while [ "$runMenu" = "0" ] #true
+while [ $runMenu = 0 ] #true
 do
 	displayMenu
 	#Get the users option
@@ -24,6 +24,7 @@ do
 	if [ "$choice" = "1" ]
 		then
 			#Prompt name and create the directory
+			echo ""
 			echo "Please enter the name of your new repository"
 			read repName
 			#Check if the repo the user wants to create already exists
@@ -53,7 +54,6 @@ do
 			then
 				cd $repName
 				RepositoryMenu "$repName"
-				runMenu=1
 			else
 				#Display error message that the repo exits already
 				echo ""
@@ -79,9 +79,9 @@ done
 
 RepositoryMenu(){
 #Initalise varaibles
-runMenu=0
+runRepMenu=0
 
-while [ "$runMenu" = "0" ] #true
+until [ "$runRepMenu" = "1" ] #true
 do
 
 	#Display the Repo Menu
@@ -109,17 +109,24 @@ echo -e "--------------------------------------------------------\n"
 	#Process the Users Option
 	if [ "$choice" = "1" ]
 		then
-			#View Files
-			echo ""
-			echo "What directory do you want to view?"
-			read folderName
+		#View Files
+				#Display the contents of the repo to the user
+				echo "Repository Content:"
+					ls
+				echo ""
+				#Ask the user what folders they want to access
+				echo "What directory do you want to view?"
+				read folderName
+			#CHeck if the fodler exists
 			if [ -d $folderName ]
 			then
+				#Display the folder contents that the user asked for
 				cd $folderName
 				echo ""
 				echo "$folderName Contents:"
 				ls
 				cd .. 
+				sleep 2
 			else
 				#Error message to let the user know they entered an invalid folder name
 				echo ""
@@ -139,7 +146,9 @@ echo -e "--------------------------------------------------------\n"
 	elif [ "$choice" = "3" ]
 		then
 			#Create new File
+			echo ""
 			addFile
+			echo ""
 	elif [ "$choice" = "4" ]
 		then
 			 #Pull 
@@ -175,7 +184,8 @@ echo -e "--------------------------------------------------------\n"
  			zip -r "$1".zip $1
  			#Success button
 			echo ""
-			echo "Archive Complete"		
+			echo "Archive Complete"
+			runRepMenu=1
 
 	elif [ "$choice" = "7" ]
 		then
@@ -186,11 +196,13 @@ echo -e "--------------------------------------------------------\n"
 		then
 		#Delete Repository
 			deleteRepository
+			runRepMenu=1
 	elif [ "$choice" = "9" ]
 		then
 		#Exit
 			echo "The program will now exit"
-			exit 0
+			runRepMenu=1
+			cd ..
 	else
 		#The user entered something that was not a valid entry
 		echo ""
@@ -205,8 +217,10 @@ done
 makeRepository(){
 	#Make the repo
 	mkdir $1
-		echo "SUCCESS: $1 has been created"
-		echo ""
+	echo ""
+	echo "SUCCESS: $1 has been created"
+	echo ""
+	sleep 1
 	#Move into the new repository
 	cd $1
 	
@@ -284,7 +298,6 @@ push()
 	echo -e "Please enter a short description of what you have changed (Please do this on one line only)"
 	read description
 
-	pwd
 	cd Master
 	touch "$1"
 	cd ..
@@ -299,7 +312,6 @@ push()
 
 			echo ""
 			echo "Push has been successful"
-	cd ..
 }
 
 
@@ -318,7 +330,6 @@ writeToLog()
 
 selectFileQuestion()
 {
-	pwd
 	cd Working
 	ls
 	#propts user to enter file name
@@ -328,18 +339,21 @@ selectFileQuestion()
 	if [ -f $fileName ]
 	then 
 		echo " "
+		cd ..
 		selectFile
 	else 
 		echo "The file was not found in the current working directory"
+		cd ..
 		selectFileQuestion
 	fi
+	
 }
 
 selectFile()
 {
-	runMenu=0
+	runSelectMenu=0
 
-while [ "$runMenu" = "0" ] #true
+while [ "$runSelectMenu" = "0" ] #true
 do
 
 	#Display the Repo Menu
@@ -397,11 +411,12 @@ do
 					cd Master
 					rm $fileName
 					cd ..
+					#Exit the loop
+					runSelectMenu=1
 				else
 				echo " "
 				fi
 			fi
-
 		elif [ "$choice" = "3" ] 
 		then
 			revert
@@ -409,7 +424,7 @@ do
 		elif [ "$choice" = "4" ]
 		then
 			echo "The program will now exit"
-			exit 0
+			runSelectMenu=1
 		else
 			echo " "
 		fi
@@ -433,9 +448,38 @@ addFile()
 {
 	cd Working
 	#opens nano and sets default file name to working 
-	nano new
-	echo "The file has been saved to working however it has not been pushed"
-	cd ..
+	
+	#Ask user what they want the file name to be
+	echo "Name the file: "
+	read filename
+
+	if [ ! -f $filename ]
+	then
+		#Edit the file
+		nano $filename
+		echo "The file has been saved to working however it has not been pushed"
+		cd ..
+
+		#Ask the user if they want to push the file they just created
+		echo -e "Would you like to push the changes? y/n"
+		read input
+		if [ $input = 'y' -o $input = 'n' ]
+		then 
+			if [ $input = 'y' ]
+			then 
+				push $filename
+			else
+				echo " "
+		fi 
+			sleep 2
+			else
+				echo "Invalid input please only enter y or n file has not been pushed"
+			fi
+	else
+		echo "error file already exists"
+	fi
+	
+
 }
 
 reversePatch()
@@ -484,11 +528,10 @@ reversePatch()
 
 selectRevQuestion()
 {
-	pwd
 	# moves to changes
-	cd ../Changes
+	cd Changes
 	ls
-	echo -e "Please enter the file name of the file you wish to selcet - Please Note this will not show if you have not pulled the repository"
+	echo -e "Please enter the file name of the file you wish to select - Please Note this will not show if you have not pulled the repository"
 	# reads the user input
 	read file
 	# checks the file exists in the directory
@@ -500,9 +543,12 @@ selectRevQuestion()
 		reversePatch $file
 	else 
 		#reprompts user
+		cd ..
 		echo "The file was not found in the current working directory"
 		selectRevQuestion
+
 	fi
+
 	
 }
 
@@ -521,18 +567,19 @@ deleteRepository()
 	if [ $input = "y" ]
 	then
 		rm -rf `pwd`
-		echo "$path has been deleted Please restart the program"
-		exit 0
+		echo "repository has been deleted"
 	# if n return to menu
 	elif [ $input = "n" ]
 	then
-		echo "Returning to repository menu"
+		echo "Returning to menu"
 		sleep 2
 	# else error message + return to menu 
 	else
 		echo "Invalid option please enter y/n. Returning to Menu"
 		sleep 2
 	fi
+
+	cd ..
 }
 
 
