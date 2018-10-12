@@ -1,5 +1,11 @@
 #!/bin/bash
 
+#AC21009
+#Charlie Hewitt	170015454
+#Andrew Holligan 170014201
+#Melvin Abraham	170013110
+
+
 displayMenu()
 {
 	echo -e "--------------------------------------------------------\n"
