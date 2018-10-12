@@ -117,11 +117,21 @@ echo -e "--------------------------------------------------------\n"
 	#Get the users option
 	read choice
 	#Process the Users Option
-	if [ "$choice" = "1" ]
+		if [ "$choice" = "1" ]
 		then
 			echo "Select File Option"
 			ls
-			selectFileQuestion
+
+			
+		if [ ! "$(ls -A ./Master)" ]
+		then
+    		echo "Error there are no files in this directory"
+    		sleep 2
+		else
+			 echo " somehing "
+    	 	selectFileQuestion
+    		
+		fi 
 	elif [ "$choice" = "2" ]
 		then
 			echo "Pull Option"
