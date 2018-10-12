@@ -93,14 +93,15 @@ do
 	ls
 
 echo -e "--------------------------------------------------------\n"
-	echo -e "1. Select File\n"
-	echo -e "2. Pull\n"
-	echo -e "3. Push\n"
-	echo -e "4. Archive\n"
-	echo -e "5. Compile\n"
-	echo -e "6. Add New File\n"
-	echo -e "7. Delete Repository\n"
-	echo -e "8. Exit\n"
+	echo -e "1. View Files\n"
+	echo -e "2. Select File\n"
+	echo -e "3. Create New File\n"
+	echo -e "4. Pull\n"
+	echo -e "5. Push\n"
+	echo -e "6. Archive\n"
+	echo -e "7. Compile\n"
+	echo -e "8. Delete Repository\n"
+	echo -e "9. Exit\n"
 echo -e "--------------------------------------------------------\n"
 
 	#Get the users option
@@ -108,66 +109,86 @@ echo -e "--------------------------------------------------------\n"
 	#Process the Users Option
 	if [ "$choice" = "1" ]
 		then
-			echo "Select File Option"
-			ls
-
-			
-		if [ ! "$(ls -A ./Master)" ]
+			#View Files
+			echo ""
+			echo "What directory do you want to view?"
+			read folderName
+			if [ -d $folderName ]
+			then
+				cd $folderName
+				echo ""
+				echo "$folderName Contents:"
+				ls
+				cd .. 
+			else
+				#Error message to let the user know they entered an invalid folder name
+				echo ""
+				echo "ERROR:	$folderName is not a directory, please try again"
+				echo ""
+			fi
+		elif [ "$choice" = "2" ]
 		then
-    		echo "Error there are no files in this directory"
-    		sleep 2
-		else
-			 echo " somehing "
-    	 	selectFileQuestion
-    		
-		fi 
-	elif [ "$choice" = "2" ]
+		#Select File
+			if [ ! "$(ls -A ./Master)" ]
+			then
+	    		echo "Error there are no files in this directory"
+	    		sleep 2
+			else
+	    	 	selectFileQuestion
+			fi 
+	elif [ "$choice" = "3" ]
 		then
+			#Create new File
+			addFile
+	elif [ "$choice" = "4" ]
+		then
+			 #Pull 
 			echo "Pull Option"
 			pull
 			echo ""
-			echo "Pull has been successful"
-	elif [ "$choice" = "3" ]
-		then
-			echo "Push Option"
-				cd Working
-				ls
-				echo -e "Please enter the file name of the file you wish to selcet"
-				read filename
-				cd ..
-				if [ -f Working/$filename ]
-				then 
-					push "$filename"
-					#cd $1
-				else 
-					echo "ERROR:	$filename does not exist, try a different file or create a new file called $filename"
-				fi
-	elif [ "$choice" = "4" ]
-		then
-			#Archive
-			#Move back a directory
-			cd ../
-			#zip the repository
-			zip -r "$1".zip $1
-			#Success button
-			echo ""
-			echo "Archive Complete"			
+			echo "Pull has been successful"		
 			
 			
 	elif [ "$choice" = "5" ] 
 		then
-		compileC
+			#Push
+			echo "Push Option"
+				cd Working
+				ls
+ 				echo -e "Please enter the file name of the file you wish to selcet"
+ 				read filename
+ 				cd ..
+ 				if [ -f Working/$filename ]
+ 				then 
+ 					push "$filename"
+ 					#cd $1
+				else 
+					echo "ERROR:	$filename does not exist, try a different file or create a new file called $filename"
+				fi
 
 	elif [ "$choice" = "6" ]
 		then
-			addFile
+			#Archive
+			#Move back a directory
+ 			cd ../
+ 			#zip the repository
+ 			zip -r "$1".zip $1
+ 			#Success button
+			echo ""
+			echo "Archive Complete"		
 
 	elif [ "$choice" = "7" ]
 		then
-			deleteRepository
+			#Complie
+			compileC
 
 	elif [ "$choice" = "8" ]
 		then
+		#Delete Repository
+			deleteRepository
+	elif [ "$choice" = "9" ]
+		then
+		#Exit
 			echo "The program will now exit"
 			exit 0
 	else
